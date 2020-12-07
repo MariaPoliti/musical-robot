@@ -7,9 +7,9 @@
 
 import setuptools
 
-setuptools.setup(name='musicalrobot',
-    version='0.993',
-    url = 'https://github.com/pozzocapstone/musical-robot',
+setuptools.setup(name='musicalrobot2',
+    version='0.994',
+    url = 'https://github.com/MariaPoliti/musical-robot',
     license = 'MIT',
     author = 'Shrilakshmi Bonageri, Jaime Rodriguez, Sage Scheiwiller, Maria Politi',
     description= 'A package for high-throughput measurement of deep eutectic solvents’ melting point using IR bolometry',

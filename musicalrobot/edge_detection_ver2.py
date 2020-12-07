@@ -119,15 +119,15 @@ def edge_detection(frames, n_samples, method='canny', track=False):
         boolean_mask = None
         for time in range(video_length):
             # remove background proportional to time in video
-            img_lin_bg =
-            frames_array[time] - background * time / (video_length - 1)
+            img_lin_bg = \
+                frames_array[time] - background * time / (video_length - 1)
             # apply sobel filter
             edges_lin_bg = filters.sobel(img_lin_bg)
             #  booleanize with certain threshold alpha
             edges_lin_bg = edges_lin_bg > edges_lin_bg.mean() * alpha
             # erode edges, fill in holes
-            edges_lin_bg =
-            ndimage.binary_erosion(edges_lin_bg, mask=boolean_mask)
+            edges_lin_bg = \
+                ndimage.binary_erosion(edges_lin_bg, mask=boolean_mask)
 
             edges_lin_bg = binary_fill_holes(edges_lin_bg)
 
@@ -143,8 +143,8 @@ def edge_detection(frames, n_samples, method='canny', track=False):
             #  booleanize with certain threshold alpha
             edges_prog_bg = edges_prog_bg > edges_prog_bg.mean() * alpha
             # erode edges, fill in holes
-            edges_prog_bg =
-            ndimage.binary_erosion(edges_prog_bg, mask=boolean_mask)
+            edges_prog_bg = \
+                ndimage.binary_erosion(edges_prog_bg, mask=boolean_mask)
 
             edges_prog_bg = binary_fill_holes(edges_prog_bg)
 
@@ -161,8 +161,8 @@ def edge_detection(frames, n_samples, method='canny', track=False):
             # binary_fill_holes(labeled_samples, structure=np.ones((2,2)))
 
             # remove stray pixels and label
-            combined_samples =
-            remove_small_objects(combined_samples, min_size=2)
+            combined_samples = \
+                remove_small_objects(combined_samples, min_size=2)
             labeled_samples = label(combined_samples)
 
             # confirm matching labels vs n_samples
@@ -174,11 +174,12 @@ def edge_detection(frames, n_samples, method='canny', track=False):
                 trial = 0
                 # keep eroding to separate the samples
                 while len(label_dict) < n_samples+1 and trial < 10:
-                    labeled_samples =
-                    ndimage.binary_erosion(labeled_samples, mask=boolean_mask)
+                    labeled_samples = \
+                        ndimage.binary_erosion(
+                            labeled_samples, mask=boolean_mask)
                     labeled_samples = label(labeled_samples)
-                    unique, counts =
-                    np.unique(labeled_samples, return_counts=True)
+                    unique, counts = \
+                        np.unique(labeled_samples, return_counts=True)
                     label_dict = dict(zip(unique, counts))
                     trial += 1
                 # print('missing:', time)
@@ -190,10 +191,11 @@ def edge_detection(frames, n_samples, method='canny', track=False):
                 # keep removing smaller labels until matching with n_samples
                 while len(label_dict) > n_samples + 1 and trial < 10:
                     temp = min(label_dict.values())
-                    labeled_samples =
-                    remove_small_objects(labeled_samples, min_size=temp + 1)
-                    unique, counts =
-                    np.unique(labeled_samples, return_counts=True)
+                    labeled_samples = \
+                        remove_small_objects(
+                            labeled_samples, min_size=temp + 1)
+                    unique, counts = \
+                        np.unique(labeled_samples, return_counts=True)
                     label_dict = dict(zip(unique, counts))
                     trial += 1
 
@@ -223,11 +225,11 @@ def edge_detection(frames, n_samples, method='canny', track=False):
                     # plt.show()
 
                     filled_samples = binary_fill_holes(edges)
-                    cl_samples =
-                    remove_small_objects(filled_samples, min_size=size)
+                    cl_samples = \
+                        remove_small_objects(filled_samples, min_size=size)
                     labeled_samples = label(cl_samples)
-                    props =
-                    regionprops(labeled_samples, intensity_image=frames[0])
+                    props = \
+                        regionprops(labeled_samples, intensity_image=frames[0])
 
                     # fig = plt.figure(3)
                     # plt.imshow(filled_samples)  # for debugging
@@ -258,8 +260,8 @@ def edge_detection(frames, n_samples, method='canny', track=False):
 
                 #  fill holes and remove noise
                 filled_samples = binary_fill_holes(edges)
-                cl_samples =
-                remove_small_objects(filled_samples, min_size=size)
+                cl_samples = \
+                    remove_small_objects(filled_samples, min_size=size)
                 labeled_samples = label(cl_samples)
                 props = regionprops(labeled_samples, intensity_image=frames[0])
 
@@ -337,8 +339,9 @@ def regprop(labeled_samples, frames, n_rows, n_columns):
         # sort label based on euclidean distance
         for item in range(len(props)):
             unsorted_label[item, 2] = np.power(
-                unsorted_label[item, 0] + unsorted_label[:, 0].min(), 2) +
-            np.power(unsorted_label[item, 1] - unsorted_label[:, 1].min(), 2)
+                unsorted_label[item, 0] + unsorted_label[:, 0].min(), 2) + \
+                np.power(
+                    unsorted_label[item, 1] - unsorted_label[:, 1].min(), 2)
 
             sorted_label = unsorted_label[unsorted_label[:, 2].argsort()]
 
@@ -350,8 +353,8 @@ def regprop(labeled_samples, frames, n_rows, n_columns):
             column[c] = int(prop.centroid[1])
             area[c] = prop.area
 
-            loc_index =
-            np.argwhere(labeled_samples[i] == sorted_label[item, 4])
+            loc_index = \
+                np.argwhere(labeled_samples[i] == sorted_label[item, 4])
 
             left_side_column = min(loc_index[:, 0]) - 1
             right_side_column = max(loc_index[:, 0]) + 1
@@ -379,8 +382,8 @@ def regprop(labeled_samples, frames, n_rows, n_columns):
             total_rectangle_temp_list = []
             for j in range(right_side_column - left_side_column + 1):
                 for k in range(right_side_row - left_side_row + 1):
-                    crop_temp =
-                    frames[i][left_side_column + j][left_side_row + k]
+                    crop_temp = \
+                        frames[i][left_side_column + j][left_side_row + k]
                     total_rectangle_temp_list.append(crop_temp)
 
             # Next, use the result from the last step to minus the
@@ -392,15 +395,15 @@ def regprop(labeled_samples, frames, n_rows, n_columns):
             c = c + 1
 
         try:
-            regprops[index] =
-            pd.DataFrame({'Row': row, 'Column': column,
-                          'Plate_temp(cK)': plate,
-                          'Radius': radius,
-                          'Plate_coord': plate_coord,
-                          'Area': area, 'Perim': perim,
-                          'Sample_temp(cK)': intensity,
-                          'unique_index': unique_index},
-                         dtype=np.float64)
+            regprops[index] =\
+                pd.DataFrame({'Row': row, 'Column': column,
+                              'Plate_temp(cK)': plate,
+                              'Radius': radius,
+                              'Plate_coord': plate_coord,
+                              'Area': area, 'Perim': perim,
+                              'Sample_temp(cK)': intensity,
+                              'unique_index': unique_index},
+                             dtype=np.float64)
             regprops[index].sort_values(['Column', 'Row'], inplace=True)
             index += 1
         except ValueError:

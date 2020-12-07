@@ -13,7 +13,7 @@ from skimage import io
 from skimage.draw import circle
 from scipy.signal import find_peaks
 from skimage.restoration import denoise_tv_chambolle
-from irtemp import centikelvin_to_celsius
+from .irtemp import centikelvin_to_celsius
 from data_encoding import final_result
 ##########################################################################################################################################################################
 ##########################################################################################################################################################################
