@@ -31,7 +31,7 @@ def input_file(file_name):
     Parameters
     -----------
     file_name : String
-        Name of the Tiff or HDF5 file to be loaded 
+        Name of the Tiff or HDF5 file to be loaded
         as it is saved on the disk.
         Provide file path if it is not in the same directory as
         the jupyter notebook.
@@ -165,8 +165,8 @@ def regprop(labeled_samples, frames, n_rows, n_columns):
             area[c] = prop.area
             perim[c] = prop.perimeter
             radius[c] = prop.equivalent_diameter/2
-            rr, cc = circle(row[c], column[c], radius = radius[c]/3)
-            intensity[c] = np.mean(frames[i][rr,cc])
+            rr, cc = circle(row[c], column[c], radius=radius[c]/3)
+            intensity[c] = np.mean(frames[i][rr, cc])
             plate[c] = frames[i][row[c]][column[c]+int(radius[c])+3]
             plate_coord[c] = column[c]+radius[c]+3
             c = c + 1
@@ -298,7 +298,8 @@ def sample_temp(sorted_regprops, frames):
 #             gradient_array = np.column_stack((frames,bspl(frames)))
 #         else:
 #             f = interp1d(plate_temp[i], sample_temp[i],bounds_error=False)
-#             gradient_array = np.column_stack((plate_temp[i],f(plate_temp[i])))
+#             gradient_array = np.column_stack(
+#                 (plate_temp[i],f(plate_temp[i])))
 #         # Calculating gradient
 #         gradient = np.gradient(gradient_array,axis=0)
 #         # Calculating derivative
@@ -319,7 +320,7 @@ def sample_temp(sorted_regprops, frames):
 #         # Appending the temperature at the peaks.
 #         if material == 'Plate':
 #             infl.append([plate_temp[i][peaks[inf_index1]],
-#                         plate_temp[i][peaks[inf_index2]]]) 
+#                         plate_temp[i][peaks[inf_index2]]])
 #         else:
 #             infl.append([sample_temp[i][peaks[inf_index1]],
 #                         sample_temp[i][peaks[inf_index2]]])
@@ -354,23 +355,24 @@ def peak_detection(sample_temp, plate_temp, material):
     peak_indices = []
     for i in range(len(sample_temp)):
         # Fitting a spline to the temperature profile of the samples.
-#         if material == 'Plate':
-#             bspl = BSpline(frames,plate_temp[i],k=3)
-#             # Stacking x and y to calculate gradient.
-#             gradient_array = np.column_stack((frames,bspl(frames)))
-#         else:
-        f = interp1d(plate_temp[i], sample_temp[i],bounds_error=False)
-        x = np.linspace(min(plate_temp[i]), max(plate_temp[i]), len(plate_temp[i]))
+        # if material == 'Plate':
+        #     bspl = BSpline(frames,plate_temp[i],k=3)
+        #     # Stacking x and y to calculate gradient.
+        #     gradient_array = np.column_stack((frames,bspl(frames)))
+        # else:
+        f = interp1d(plate_temp[i], sample_temp[i], bounds_error=False)
+        x = np.linspace(min(plate_temp[i]), max(plate_temp[i]),
+                        len(plate_temp[i]))
         y = f(x)
         n = 25  # the larger n is, the smoother curve will be
         b = [1.0 / n] * n
         a = 1
-        yy = filtfilt(b,a,y)
-        gradient_array = np.column_stack((x,yy))
+        yy = filtfilt(b, a, y)
+        gradient_array = np.column_stack((x, yy))
         # Calculating gradient
-        first_gradient = np.gradient(gradient_array,axis=0)
+        first_gradient = np.gradient(gradient_array, axis=0)
         # Calculating derivative
-        derivative = first_gradient[:,1]/first_gradient[:,0]
+        derivative = first_gradient[:, 1]/first_gradient[:, 0]
         # Finding peaks in the derivative plot.
         peaks, properties = find_peaks(derivative, height=0)
         # Peak heights
@@ -383,11 +385,11 @@ def peak_detection(sample_temp, plate_temp, material):
         inf_index1 = list(peak_heights).index(max_height1)
         inf_index2 = list(peak_heights).index(max_height2)
         # Appending the frame number in which these peaks occur to a list
-        peak_indices.append([peaks[inf_index1],peaks[inf_index2]])
+        peak_indices.append([peaks[inf_index1], peaks[inf_index2]])
         # Appending the temperature at the peaks.
         if material == 'Plate':
             infl.append([x[peak_indices[i][0]],
-                        x[peak_indices[i][1]]]) 
+                        x[peak_indices[i][1]]])
         else:
             infl.append([yy[peak_indices[i][0]],
                         yy[peak_indices[i][1]]])
@@ -502,6 +504,7 @@ def inflection_temp(frames, n_rows, n_columns, path):
     result_df = de.final_result(s_temp, p_temp, path)
     # Creating a dataframe with row and column coordinates
     # of sample centroid and its melting temperature (Inflection point).
-    m_df = pd.DataFrame({'Row': regprops[0].Row, 'Column': regprops[0].Column,
-                        'Melting point': np.asarray(s_infl)[:,0]})
+    m_df = pd.DataFrame({'Row': regprops[0].Row,
+                         'Column': regprops[0].Column,
+                         'Melting point': np.asarray(s_infl)[:, 0]})
     return sorted_regprops, s_temp, p_temp, s_infl, result_df

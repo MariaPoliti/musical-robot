@@ -703,8 +703,9 @@ def inflection_temp(frames, n_rows, n_columns, ver=2):
 
     # Creating a dataframe with row and column coordinates
     # of sample centroid and its melting temperature (Inflection point).
-    m_df = pd.DataFrame({'Row': regprops[0].Row, 'Column': regprops[0].Column,
-                        'Melting point': inf_temp})
+    m_df = pd.DataFrame({'Row': regprops[0].Row,
+                         'Column': regprops[0].Column,
+                         'Melting point': inf_temp})
     return sorted_regprops, s_temp, p_temp, inf_temp, m_df
 
 

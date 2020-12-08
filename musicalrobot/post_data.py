@@ -35,8 +35,8 @@ def export_csv(final_data):
     def exportCSV():
         global df
 
-        export_file_path = filedialog.asksaveasfilename(defaultextension
-                                                        ='.csv')
+        export_file_path = filedialog.asksaveasfilename(
+            defaultextension='.csv')
         df.to_csv(export_file_path, index=None, header=True)
 
     saveAsButton_CSV = tk.Button(text='Export CSV', command=exportCSV,
