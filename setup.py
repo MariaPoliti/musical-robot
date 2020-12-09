@@ -8,7 +8,7 @@
 import setuptools
 
 setuptools.setup(name='musicalrobot2',
-    version='0.994',
+    version='0.995',
     url = 'https://github.com/MariaPoliti/musical-robot',
     license = 'MIT',
     author = 'Shrilakshmi Bonageri, Jaime Rodriguez, Sage Scheiwiller, Maria Politi',

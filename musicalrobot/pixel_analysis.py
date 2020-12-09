@@ -8,13 +8,13 @@ import numpy as np
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import edge_detection
+import edge_detection_ver2 as ed
 
 from skimage import io
 from skimage.draw import circle
 from scipy.signal import find_peaks
 from skimage.restoration import denoise_tv_chambolle
-from .irtemp import centikelvin_to_celsius
+from irtemp import centikelvin_to_celsius
 from data_encoding import final_result
 
 ##############################################################################
@@ -209,7 +209,7 @@ def locations(row_peak_indices, column_peak_indices, image):
                 plate_location.append(int((row[j] + row[j-1])/2))
     # Dataframe containing the well location(row and column)
     sample_location = pd.DataFrame(
-        list(zip(row, column, plate_location))
+        list(zip(row, column, plate_location)),
         columns=['Row', 'Column', 'plate_location'])
     plt.imshow(image)
     plt.scatter(sample_location['Column'],
@@ -294,7 +294,7 @@ def pixel_temp(frames, n_columns, n_rows, path, freeze_heat):
         A dataframe containing row and column coordinates of each sample
         and its respective inflection point obtained.
     '''
-    # flip_frames = edge_detection.flip_frame(frames)
+    # flip_frames = ed.flip_frame(frames)
     # Function to obtained an equalized image using all the frames
     # in the video.
     img_eq = image_eq(frames)
@@ -313,11 +313,11 @@ def pixel_temp(frames, n_columns, n_rows, path, freeze_heat):
         sample_location, frames, x_name='Row', y_name='Column',
         plate_name='plate_location')
     # Function to obtain the peaks in sample temperature profile
-    s_peaks, s_infl = edge_detection.peak_detection(temp, plate_temp, 'Sample')
+    s_peaks, s_infl = ed.peak_detection(temp, plate_temp, 'Sample')
     # Neural network classification
     result_df = final_result(temp, plate_temp, path)
     # # Function to obtain the peaks in plate location temperature profile
-    # p_peaks, p_infl = edge_detection.peak_detection(temp, plate_temp,'Plate')
+    # p_peaks, p_infl = ed.peak_detection(temp, plate_temp,'Plate')
     # # Function to obtain the inflection point(melting point)
     # # from the temperature profile.
     # inf_temp = inflection_point(temp, plate_temp, s_peaks, p_peaks)

@@ -10,7 +10,7 @@ matplotlib.use('Agg')
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from matplotlib import pyplot as plt
-import edge_detection as ed
+import edge_detection_ver2 as ed
 from scipy.interpolate import interp1d
 from scipy.signal import filtfilt
 from scipy.interpolate import BSpline
@@ -288,7 +288,7 @@ def inf_images(temp, plate_temp, n, nonoise_index, path):
     # image
     for i in nonoise_index:
         img1 = plot_to_array(plate_temp[i], temp[i], n)
-        img2 = plot_to_array1(deri[i], l)
+        img2 = plot_to_array1(deri[i], n)
         img3 = np.zeros([n*100, n*100], dtype=np.uint8)
         img3 = (img3*255).astype(np.uint8)
         new_img = np.dstack((img1, img2, img3))

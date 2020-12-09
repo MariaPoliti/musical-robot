@@ -4,10 +4,11 @@ import matplotlib.pyplot as plt
 import musicalrobot
 import os
 
-from musicalrobot import edge_detection as ed
+from musicalrobot import edge_detection_ver2 as ed
 from musicalrobot import pixel_analysis as pa
 
-def dict_pack (d_files, d_names, d_crop, d_inftemp, d_temp, d_plate):
+
+def dict_pack(d_files, d_names, d_crop, d_inftemp, d_temp, d_plate):
     """
     Function is used within the auto_crop function to  crop using the inputs
     given by the user.
@@ -32,11 +33,17 @@ def dict_pack (d_files, d_names, d_crop, d_inftemp, d_temp, d_plate):
         Nested dictionary of all of the needed dictonary
 
     """
-    d_all = {'d_files' : d_files, 'd_names' : d_names, 'd_crop' : d_crop, 'd_inftemp': d_inftemp, 'd_temp' : d_temp, 'd_plate' : d_plate}
+    d_all = {'d_files': d_files,
+             'd_names': d_names,
+             'd_crop': d_crop,
+             'd_inftemp': d_inftemp,
+             'd_temp': d_temp,
+             'd_plate': d_plate}
 
     return d_all
 
-def dict_unpack (d_all):
+
+def dict_unpack(d_all):
     """
     Function is used within the auto_crop function to  crop using the inputs
     given by the user.
@@ -70,7 +77,8 @@ def dict_unpack (d_all):
 
     return d_files, d_names, d_crop, d_inftemp, d_temp, d_plate
 
-def image_crop (tocrop, top, bottom, left, right):
+
+def image_crop(tocrop, top, bottom, left, right):
     """
     Function is used within the auto_crop function to  crop using the inputs
     given by the user.
@@ -101,8 +109,8 @@ def image_crop (tocrop, top, bottom, left, right):
     """
     crop = []
 
-    #checking tocrop is an array and converting if its not
-    if isinstance(tocrop, np.ndarray) == True:
+    # checking tocrop is an array and converting if its not
+    if isinstance(tocrop, np.ndarray) is True:
         pass
     else:
         tocrop = np.asarray(tocrop)
@@ -113,7 +121,8 @@ def image_crop (tocrop, top, bottom, left, right):
 
     return crop
 
-def plot_image (crop, plotname):
+
+def plot_image(crop, plotname):
     """
     Plots the given cropped image - used as an internal function
 
@@ -138,33 +147,34 @@ def plot_image (crop, plotname):
 
     return
 
-def plot_profiles (temp, plate_temp, save_location):
+
+def plot_profiles(temp, plate_temp, save_location):
     """
 
     """
 
     for i in range(len(temp[:96])):
-        fig, ax = plt.subplots(1,2,figsize=(15,5))
+        fig, ax = plt.subplots(1, 2, figsize=(15, 5))
         # Plotting frame number vs sample temp
-        frame_number = np.linspace(1,len(temp[i]),len(temp[i]))
-        #plot number 1
+        frame_number = np.linspace(1, len(temp[i]), len(temp[i]))
+        # plot number 1
         ax[0].scatter(frame_number, temp[i], s=0.5)
         ax[0].set_title('Frame number vs Sample temp:Sample '+str(i+1))
         ax[0].set_xlabel('Frame_number')
-        ax[0].set_ylabel('Sample temperature($^{\circ}$C)')
+        ax[0].set_ylabel('Sample temperature($^{o}$C)')
 
         # Plotting plate temp vs sample temp
         ax[1].scatter(plate_temp[i], temp[i], s=0.5)
         ax[1].set_title('Plate temp vs Sample temp:Sample '+str(i+1))
-        ax[1].set_xlabel('Plate temperature($^{\circ}$C)')
-        ax[1].set_ylabel('Sample temperature($^{\circ}$C)')
-        
+        ax[1].set_xlabel('Plate temperature($^{o}$C)')
+        ax[1].set_ylabel('Sample temperature($^{o}$C)')
+
         plt.savefig(save_location + "/Sample " + str(i+1) + ".jpg")
 
     return
 
 
-def choose_crop (tocrop, plotname):
+def choose_crop(tocrop, plotname):
     """
     Will ask user to choose if the image will be cropped or not. Will skip the
         specific image
@@ -182,9 +192,9 @@ def choose_crop (tocrop, plotname):
     Returns:
     --------
     crop: array
-        The array of the tiff file with the requested columns/rows removed. Needs
-        to be returned twice to save to the dictionary and then be able to be
-        out of the function for use in next functions.
+        The array of the tiff file with the requested columns/rows removed.
+        Needs to be returned twice to save to the dictionary and then be
+        able to be out of the function for use in next functions.
 
     """
     crop = []
@@ -193,7 +203,8 @@ def choose_crop (tocrop, plotname):
 
     while out == 0:
         crop = tocrop
-        decide = input("Do you want to run the crop for this video? Options are y/n: ")
+        decide = input(
+            "Do you want to run the crop for this video? Options are y/n: ")
         if decide == 'y':
             crop = auto_crop(tocrop, plotname)
             out = 1
@@ -206,7 +217,8 @@ def choose_crop (tocrop, plotname):
 
     return crop, crop
 
-def auto_crop (tocrop, plotname):
+
+def auto_crop(tocrop, plotname):
     """
     Will request an imput from the user to determine how much of the image to
         crop off the sides, top, and bottom. Will produce a cropped image
@@ -228,14 +240,15 @@ def auto_crop (tocrop, plotname):
         The array of the tiff file with the requested columns/rows removed
 
     """
-    #intro constants
+    # intro constants
     TotalChange = 1
     left = 0
     right = 0
     top = 0
     bottom = 0
 
-    #User inputs - plot will show between each iteration and will show updates with inputs
+    # User inputs - plot will show between each iteration
+    # and will show updates with inputs
     while TotalChange != 0:
         crop = image_crop(tocrop, top, bottom, left, right)
         plot_image(crop, plotname)
@@ -260,12 +273,12 @@ def auto_crop (tocrop, plotname):
     return crop
 
 
-def inflection_points (crop, plotname, save_location):
+def inflection_points(crop, plotname, save_location):
     """
-    This is a rewrap of the inflection point analysis function using the additive
-        rows and columns to find the centriods. All function are the same, but
-        the variable names have been changed to match the rest of the bulk
-        wrapping functions
+    This is a rewrap of the inflection point analysis function using the
+    additive rows and columns to find the centriods. All function are the same,
+    but the variable names have been changed to match the rest of the bulk
+    wrapping functions
 
     IMPORTANT: This function assumes that the sample is being run on a 96 well
         plate. If this is not correct the number of detected wells will be off
@@ -288,7 +301,8 @@ def inflection_points (crop, plotname, save_location):
     r_peaks, c_peaks = pa.peak_values(column_sum, row_sum, 12, 8, img_eq)
     sample_location = pa.locations(r_peaks, c_peaks, img_eq)
 
-    temp, plate_temp = pa.pixel_intensity(sample_location, crop, 'Row', 'Column', 'plate_location')
+    temp, plate_temp = pa.pixel_intensity(sample_location, crop,
+                                          'Row', 'Column', 'plate_location')
 
     s_peaks, s_infl = ed.peak_detection(temp, plate_temp, 'Sample')
     p_peaks, p_infl = ed.peak_detection(temp, plate_temp, 'Plate')
@@ -298,7 +312,8 @@ def inflection_points (crop, plotname, save_location):
 
     return inf_temp, inf_temp, temp, plate_temp
 
-def bulk_crop (cv_file_names, location, d_all):
+
+def bulk_crop(cv_file_names, location, d_all):
     """
     Wrapper for all of the bulk cropping functions. Wraps through all of the
         files in the inputed folder, asks for input if the user would like to
@@ -309,12 +324,12 @@ def bulk_crop (cv_file_names, location, d_all):
     Parameters:
     -----------
     cv_file_names : list
-        list of all of the file names in a specified folder, needs to be created
-        before running the bulk wrapper
+        list of all of the file names in a specified folder, needs to be
+        created before running the bulk wrapper
 
     location : string
-        string containing the file location of the desired folder from the current
-        location of the workbook
+        string containing the file location of the desired folder from the
+        current location of the workbook
 
     d_all : dictonary
         Nested dictionary of all of the needed dictonary
@@ -322,14 +337,14 @@ def bulk_crop (cv_file_names, location, d_all):
     Returns:
     --------
     d_all : dictonary
-        Nested dictionary of all of the needed dictonary, Should contain all the
-        new additions from the functions
+        Nested dictionary of all of the needed dictonary, Should contain all
+        the new additions from the functions
     """
     d_files, d_names, d_crop, d_inftemp, d_temp, d_plate = dict_unpack(d_all)
 
-    for i,file in enumerate(cv_file_names):
-        #file input
-        d_files['%s' % i] = ed.input_file(location +str(file))
+    for i, file in enumerate(cv_file_names):
+        # file input
+        d_files['%s' % i] = ed.input_file(location + str(file))
 
         # create names
         hold_name = cv_file_names[i]
@@ -345,14 +360,15 @@ def bulk_crop (cv_file_names, location, d_all):
             else:
                 tocrop = d_files['%s' % i]
 
-        #auto crops
+        # auto crops
         d_crop['%s' % i], crop = choose_crop(tocrop, plotname)
 
     d_all = dict_pack(d_files, d_names, d_crop, d_inftemp, d_temp, d_plate)
 
     return d_all
 
-def bulk_analyze (cv_file_names, d_all):
+
+def bulk_analyze(cv_file_names, d_all):
     """
     Wrapper for all of the bulk analysis functions. Wraps through all of the
         files in the inputed folder. Runs analysis functions and then continues
@@ -370,8 +386,8 @@ def bulk_analyze (cv_file_names, d_all):
     Returns:
     --------
     d_all : dictonary
-        Nested dictionary of all of the needed dictonary, Should contain all the
-        new additions from the functions
+        Nested dictionary of all of the needed dictonary,
+        Should contain all the new additions from the functions
 
     all_inf : dataframe
         a dataframe with all of the sample wells and all of the frames. The
@@ -382,7 +398,7 @@ def bulk_analyze (cv_file_names, d_all):
 
     all_inf = pd.DataFrame()
 
-    for i, file in enumerate (cv_file_names):
+    for i, file in enumerate(cv_file_names):
         plotname = d_names[str(i)]
         keyname = str(i)
 
@@ -391,19 +407,21 @@ def bulk_analyze (cv_file_names, d_all):
             os.makedirs(save_location)
 
         crop = d_crop[keyname]
-        #save inftemps
-        d_inftemp['%s' % i], inf_temp, d_temp, d_plate = inflection_points(crop, plotname, save_location)
-        #create df output
+        # save inftemps
+        d_inftemp['%s' % i], inf_temp, d_temp, d_plate = inflection_points(
+            crop, plotname, save_location)
+        # create df output
         all_inf[plotname] = inf_temp
 
     d_all = dict_pack(d_files, d_names, d_crop, d_inftemp, d_temp, d_plate)
 
     return d_all, all_inf
 
-def bulk_process (cv_file_names, location, d_all):
+
+def bulk_process(cv_file_names, location, d_all):
     """
-    Wrapper for all of the bulk functions. Runs the bulk cropper followed by the
-        bulk analyzer.
+    Wrapper for all of the bulk functions. Runs the bulk cropper followed by
+    the bulk analyzer.
 
     Parameters:
     -----------
@@ -412,8 +430,8 @@ def bulk_process (cv_file_names, location, d_all):
         to be created before running the bulk wrapper
 
     location : string
-        string containing the file location of the desired folder from the current
-        location of the workbook
+        string containing the file location of the desired folder from the
+        current location of the workbook
 
     d_all : dictonary
         Nested dictionary of all of the needed dictonary, should either be
@@ -422,8 +440,8 @@ def bulk_process (cv_file_names, location, d_all):
     Returns:
     --------
     d_all : dictonary
-        Nested dictionary of all of the needed dictonary, Should contain all the
-        new additions from the functions
+        Nested dictionary of all of the needed dictonaries
+        Should contain all the new additions from the functions
 
     all_inf : dataframe
         a dataframe with all of the sample wells and all of the frames. The
