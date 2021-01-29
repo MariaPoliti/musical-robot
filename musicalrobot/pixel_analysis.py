@@ -241,7 +241,7 @@ def pixel_intensity(sample_location, frames, x_name, y_name, plate_name):
         Name of the column in sample_location containing the column values
         of the samples.
     plate_name : String
-        Name of the column in sample_location containing the column values
+        Name of the column in sample_location containing the row values
         of the plate location.
 
     Returns
@@ -255,19 +255,20 @@ def pixel_intensity(sample_location, frames, x_name, y_name, plate_name):
     temp = []
     plate_temp = []
     # Row values of the peaks
-    x = sample_location[x_name]
+    row = sample_location[x_name]
     # Column values of the peaks
-    y = sample_location[y_name]
+    col = sample_location[y_name]
     # Row value of the plate location
-    p = sample_location[plate_name]
+    p_row = sample_location[plate_name]
     for i in range(len(sample_location)):
         temp_well = []
         plate_well_temp = []
         for frame in frames:
             rr, cc = circle(x[i], y[i], radius=1)
             sample_intensity = np.mean(frame[rr, cc])
-            temp_well.append(centikelvin_to_celsius(frame[x[i]][y[i]]))
-            plate_well_temp.append(centikelvin_to_celsius(frame[p[i]][y[i]]))
+            temp_well.append(centikelvin_to_celsius(frame[row[i]][col[i]]))
+            plate_well_temp.append(centikelvin_to_celsius(
+                frame[p_row[i]][col[i]]))
         temp.append(temp_well)
         plate_temp.append(plate_well_temp)
     return temp, plate_temp

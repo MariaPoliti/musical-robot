@@ -24,6 +24,7 @@ from scipy import signal
 
 import matplotlib.pyplot as plt
 from scipy import ndimage
+from pixel_analysis import image_eq
 
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -623,7 +624,7 @@ def inflection_point(s_temp, p_temp, s_peaks, p_peaks):
 
 # Wrapping functions
 # Wrapping function to get the inflection point
-def inflection_temp(frames, n_rows, n_columns, ver=2):
+def inflection_temp(frames, n_rows, n_columns, method='canny', ver=2):
     """
     Function to obtain sample temperature and plate temperature
     in every frame of the video using edge detection.
@@ -637,6 +638,8 @@ def inflection_temp(frames, n_rows, n_columns, ver=2):
         Number of rows of sample
     n_columns: List
         Number of columns of sample
+    method: str
+        Name of method to use for edge detection for version 2
     ver: int
         Number of detection version to be used
 
@@ -671,11 +674,12 @@ def inflection_temp(frames, n_rows, n_columns, ver=2):
 
     # run the edge detection using version 1 or 2 based on user input
     if ver is 1:
-        labeled_samples = edge_detection(frames, n_samples)
+        labeled_samples = edge_detection(frames, n_samples, method=method)
         # print(len(labeled_samples), type(labeled_samples))
     elif ver == 2:
         track = True
-        labeled_samples = edge_detection(frames, n_samples, track=track)
+        labeled_samples = edge_detection(frames, n_samples, method=method,
+                                         track=track)
         # print(len(labeled_samples), type(labeled_samples))
     else:
         raise ValueError('Invalid version input')
